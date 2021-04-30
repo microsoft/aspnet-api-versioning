@@ -12,6 +12,7 @@
     using System.Web.Http;
     using System.Web.Http.Controllers;
     using System.Web.Http.Dispatcher;
+    using System.Threading;
     using static Microsoft.Web.Http.Versioning.ErrorCodes;
     using static System.StringComparer;
 
@@ -36,7 +37,7 @@
         {
             this.configuration = configuration;
             this.options = options;
-            controllerInfoCache = new Lazy<ConcurrentDictionary<string, HttpControllerDescriptorGroup>>( InitializeControllerInfoCache );
+            controllerInfoCache = new Lazy<ConcurrentDictionary<string, HttpControllerDescriptorGroup>>( InitializeControllerInfoCache, LazyThreadSafetyMode.PublicationOnly );
             controllerTypeCache = new HttpControllerTypeCache( this.configuration );
         }
 
