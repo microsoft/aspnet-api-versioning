@@ -246,7 +246,7 @@
                     AllowedLogicalOperators.All,
                     AllowedArithmeticOperators.All,
                     AllowedFunctions.All,
-                    "Restricts the set of items returned. The allowed properties are: category, price, quantity.",
+                    "Restricts the set of items returned. The allowed functions are: all. The allowed properties are: category, price, quantity.",
                 };
             }
         }
