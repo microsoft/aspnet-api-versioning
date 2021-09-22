@@ -1,0 +1,80 @@
+name: CI/CD Pipeline
+
+on: [ push, pull_request, workflow_dispatch ]
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: windows-latest
+    env:
+      pathToSolution: ApiVersioning.sln
+      testResultsFolderName: Test results
+      publishOutputFolderName: Publish output
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Build and test validation
+
+      - name: Restore solution
+        shell: pwsh
+        run: |
+          $pathToSolution = "${{ env.pathToSolution }}"
+
+          dotnet restore $pathToSolution
+
+      - name: Build solution
+        shell: pwsh
+        run: |
+          $pathToSolution = "${{ env.pathToSolution }}"
+          $configurationSetting = "Debug"
+
+          dotnet build $pathToSolution `
+          --configuration $configurationSetting `
+          --no-restore
+
+      - name: Run unit tests
+        shell: pwsh
+        run: |
+          $pathToSolution = "${{ env.pathToSolution }}"
+          $configurationSetting = "Debug"
+          $loggerAttributes = "trx;LogFilePath=TestResults.trx;verbosity=normal"
+          $testOutputFolder = "${{ env.testResultsFolderName }}"
+
+          dotnet test $pathToSolution `
+          --configuration $configurationSetting `
+          --logger $loggerAttributes `
+          --results-directory $testOutputFolder `
+          --no-build
+
+      # Artifact generation
+
+      - name: Publish project for each target framework
+        shell: pwsh
+        run: |
+          $pathToProject = "src\Microsoft.AspNet.WebApi.Versioning\Microsoft.AspNet.WebApi.Versioning.csproj"
+          $configurationSetting = "Debug"
+          $publishOutputFolder = "${{ env.publishOutputFolderName }}"
+          $frameworkVersion = "net45"
+
+          dotnet publish $pathToProject `
+          --configuration $configurationSetting `
+          --output "$publishOutputFolder/$frameworkVersion" `
+          --framework $frameworkVersion `
+          --no-restore
+
+      # Artifact publish to pipeline
+
+      - name: Upload test results as pipeline artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test results
+          path: "${{ env.testResultsFolderName }}"
+
+      - name: Upload publish output as pipeline artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Publish outputs
+          path: "${{ env.publishOutputFolderName }}"
+
+# Built with ❤ by [Pipeline Foundation](https://pipeline.foundation)
