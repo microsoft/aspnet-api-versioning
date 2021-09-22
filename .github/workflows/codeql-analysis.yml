@@ -1,0 +1,43 @@
+name: CodeQL Analysis
+
+on:
+  push:
+    # ignore dependabot branches on push -> https://github.com/microsoft/binskim/issues/425#issuecomment-893373709
+    branches-ignore:
+      - 'dependabot/**'
+  pull_request:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          queries: security-and-quality
+          languages: csharp
+
+      - name: Build solution
+        shell: pwsh
+        run: |
+          $buildConfiguration = "Release"
+          $useSharedCompilation = "false"
+
+          Get-ChildItem src -Include *.csproj -Recurse | ForEach-Object { 
+            dotnet build $_.FullName `
+            -property:UseSharedCompilation=$useSharedCompilation `
+            --configuration $buildConfiguration `
+            --no-incremental
+          }
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+# Built with ❤ by [Pipeline Foundation](https://pipeline.foundation)
