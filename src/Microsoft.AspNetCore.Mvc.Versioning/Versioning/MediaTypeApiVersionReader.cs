@@ -24,10 +24,11 @@
 
             var headers = request.GetTypedHeaders();
             var contentType = headers.ContentType;
+            var contentTypeVersion = contentType != null ? ReadContentTypeHeader( contentType ) : default;
 
-            if ( contentType != null )
+            if ( contentTypeVersion != null )
             {
-                return ReadContentTypeHeader( contentType );
+                return contentTypeVersion;
             }
 
             var accept = headers.Accept;

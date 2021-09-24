@@ -23,9 +23,11 @@
 
             var contentType = request.Content?.Headers.ContentType;
 
-            if ( contentType != null )
+            var contentTypeVersion = contentType != null ? ReadContentTypeHeader( contentType ) : default;
+
+            if ( contentTypeVersion != null )
             {
-                return ReadContentTypeHeader( contentType );
+                return contentTypeVersion;
             }
 
             var accept = request.Headers.Accept;

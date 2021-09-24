@@ -116,6 +116,28 @@
         }
 
         [Fact]
+        public void read_should_prefer_explicit_version_in_accept_over_implicit_in_content_type()
+        {
+            // arrange
+            var reader = new MediaTypeApiVersionReader();
+            var request = new HttpRequestMessage( Post, "http://tempuri.org" )
+            {
+                Content = new StringContent( "{\"message\":\"test\"}", UTF8 )
+            };
+
+            request.Content.Headers.ContentType = Parse( "application/json" );
+            request.Headers.Accept.Add( Parse( "application/xml" ) );
+            request.Headers.Accept.Add( Parse( "application/xml+atom;q=0.8;v=1.5" ) );
+            request.Headers.Accept.Add( Parse( "application/json;q=0.2;v=2.0" ) );
+
+            // act
+            var version = reader.Read( request );
+
+            // assert
+            version.Should().Be( "1.5" );
+        }
+        
+        [Fact]
         public void read_should_retrieve_version_from_content_type_with_custom_parameter()
         {
             // arrange

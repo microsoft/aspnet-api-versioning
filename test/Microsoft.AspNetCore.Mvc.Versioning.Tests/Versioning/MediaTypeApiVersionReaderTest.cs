@@ -117,6 +117,36 @@
             version.Should().Be( "2.0" );
         }
 
+
+        [Fact]
+        public void read_should_prefer_explicit_version_in_accept_over_implicit_in_content_type()
+        {
+            // arrange
+            var reader = new MediaTypeApiVersionReader();
+            var request = new Mock<HttpRequest>();
+            var headers = new Mock<IHeaderDictionary>();
+            var mediaTypes = new[]
+            {
+                "application/xml",
+                "application/xml+atom;q=0.8;v=1.5",
+                "application/json;q=0.2;v=2.0"
+            };
+
+            headers.SetupGet( h => h["Accept"] ).Returns( new StringValues( mediaTypes ) );
+            headers.SetupGet( h => h["Content-Type"] ).Returns( new StringValues( "application/json" ) );
+            request.SetupGet( r => r.Headers ).Returns( headers.Object );
+            request.SetupProperty( r => r.Body, Null );
+            request.SetupProperty( r => r.ContentLength, 0L );
+            request.SetupProperty( r => r.ContentType, "application/json" );
+            request.SetupGet( r => r.Headers ).Returns( headers.Object );
+
+            // act
+            var version = reader.Read( request.Object );
+
+            // assert
+            version.Should().Be( "1.5" );
+        }
+
         [Fact]
         public void read_should_retrieve_version_from_content_type_with_custom_parameter()
         {
