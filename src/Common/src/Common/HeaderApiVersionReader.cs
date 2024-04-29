@@ -15,6 +15,10 @@ public partial class HeaderApiVersionReader : IApiVersionReader
     /// <summary>
     /// Initializes a new instance of the <see cref="HeaderApiVersionReader"/> class.
     /// </summary>
+    /// <remarks>
+    /// There is no default header. Either initialize headers using the <see cref="HeaderNames"/> collection property,
+    /// or call a constructor that  accepts header names. Otherwise, this reader has no effect.
+    /// </remarks>
     public HeaderApiVersionReader() { }
 
     /// <summary>
