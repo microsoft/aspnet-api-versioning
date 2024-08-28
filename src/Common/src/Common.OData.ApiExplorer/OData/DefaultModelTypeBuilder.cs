@@ -417,7 +417,7 @@ public sealed class DefaultModelTypeBuilder : IModelTypeBuilder
         var field = addTo.DefineField( "_" + name, shouldBeAdded, FieldAttributes.Private );
         var propertyBuilder = addTo.DefineProperty( name, PropertyAttributes.HasDefault, shouldBeAdded, null );
         var getter = addTo.DefineMethod( "get_" + name, propertyMethodAttributes, shouldBeAdded, Type.EmptyTypes );
-        var setter = addTo.DefineMethod( "set_" + name, propertyMethodAttributes, shouldBeAdded, Type.EmptyTypes );
+        var setter = addTo.DefineMethod( "set_" + name, propertyMethodAttributes, null, [shouldBeAdded] );
         var il = getter.GetILGenerator();
 
         il.Emit( OpCodes.Ldarg_0 );
