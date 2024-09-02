@@ -167,6 +167,7 @@ public class ODataApiDescriptionProvider : IApiDescriptionProvider
     {
         var localODataOptions = ODataOptions;
         var localQueryOptions = Options.QueryOptions;
+#pragma warning disable CS0618 // Type or member is obsolete
         var settings = new ODataQueryOptionSettings()
         {
             NoDollarPrefix = localODataOptions.EnableNoDollarQueryOptions,
@@ -174,6 +175,7 @@ public class ODataApiDescriptionProvider : IApiDescriptionProvider
             DefaultQuerySettings = localODataOptions.QuerySettings,
             ModelMetadataProvider = ModelMetadataProvider,
         };
+#pragma warning restore CS0618 // Type or member is obsolete
 
         localQueryOptions.ApplyTo( apiDescriptions, settings );
     }
@@ -309,10 +311,14 @@ public class ODataApiDescriptionProvider : IApiDescriptionProvider
             switch ( template[i] )
             {
                 case EntitySetSegmentTemplate segment:
+#pragma warning disable CS0618 // Type or member is obsolete
                     entity = segment.EntitySet.EntityType();
+#pragma warning restore CS0618 // Type or member is obsolete
                     break;
                 case SingletonSegmentTemplate segment:
+#pragma warning disable CS0618 // Type or member is obsolete
                     entity = segment.Singleton.EntityType();
+#pragma warning restore CS0618 // Type or member is obsolete
                     break;
             }
         }
